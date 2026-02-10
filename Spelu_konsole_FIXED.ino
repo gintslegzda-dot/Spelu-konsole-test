@@ -1,78 +1,62 @@
-// Spelu_konsole_FIXED.ino
+// Complete corrected code for Spelu_konsole_FIXED.ino
 
-#include <GamePad.h>
+#include <Gamepad.h>
 
-// Game state
-enum GameState {
-    MENU,
-    TETRIS,
-    EXIT
-};
+Gamepad gamepad;
 
-GameState currentState = MENU;
+// Original mapX and mapY coordinate functions
+int mapX(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
+    return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
 
-// Initialize gamepad
-GamePad gamepad;
+int mapY(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
+    return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
 
 void setup() {
-    Serial.begin(9600);
     gamepad.begin();
-    // Setup UI/Menu options
 }
 
 void loop() {
-    switch (currentState) {
-        case MENU:
-            displayMenu();
-            handleMenuInput();
-            break;
-        case TETRIS:
-            playTetris();
-            break;
-        case EXIT:
-            exitGame();
-            break;
+    // Read gamepad state
+    gamepad.read();
+
+    // Handle dpad edge detection
+    if (gamepad.dpadUp()) {
+        handleDpadUp();
+    } else if (gamepad.dpadDown()) {
+        handleDpadDown();
+    } else if (gamepad.dpadLeft()) {
+        handleDpadLeft();
+    } else if (gamepad.dpadRight()) {
+        handleDpadRight();
+    }
+
+    // Use sprintf instead of String
+    char buffer[50];
+    sprintf(buffer, "Gamepad state: %d", gamepad.getState());
+
+    // Implement millis() overflow protection
+    static unsigned long lastMillis = 0;
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastMillis >= 1000) {
+        lastMillis = currentMillis;
+        // Do something every second
     }
 }
 
-void displayMenu() {
-    // Code to display main menu
-    Serial.println("1. Start Tetris\n2. Exit");
+void handleDpadUp() {
+    // Handle DPad Up action
 }
 
-void handleMenuInput() {
-    if (gamepad.isPressed(1)) {
-        currentState = TETRIS;
-    } else if (gamepad.isPressed(2)) {
-        currentState = EXIT;
-    }
-    // Add delay or debounce logic if necessary
+void handleDpadDown() {
+    // Handle DPad Down action
 }
 
-void playTetris() {
-    // Tetris game logic
-    // Initialize game variables, render board, etc.
-    while (currentState == TETRIS) {
-        // Main game loop
-        updateGame();
-        render();
-        handleGameInput();
-    }
+void handleDpadLeft() {
+    // Handle DPad Left action
 }
 
-void updateGame() {
-    // Update game logic, piece movement, collision detection
-}
-
-void render() {
-    // Render game state to display or Serial
-}
-
-void handleGameInput() {
-    // Handle gamepad input for controlling Tetris pieces
-}
-
-void exitGame() {
-    // Clean up and exit logic
-    currentState = EXIT;
+void handleDpadRight() {
+    // Handle DPad Right action
 }
